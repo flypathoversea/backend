@@ -14,17 +14,31 @@ dotenv.config();
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
-const MONGO_URI    = process.env.MONGODB_URI    || 'mongodb://localhost:27017/visapath';
+const MONGO_URI    = process.env.MONGODB_URI ;
 const ADMIN_EMAIL  = process.env.ADMIN_EMAIL    || 'admin@visapath.com';
 const ADMIN_PASS   = process.env.ADMIN_PASSWORD || 'Admin@1234';
 const JWT_SECRET   = process.env.JWT_SECRET     || 'visapath_default_secret_key_2025';
+
+const allowedOrigins = process.env.FRONTEND_URL.split(',');
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 
 /* Make JWT_SECRET available to auth middleware/controllers */
 process.env.JWT_SECRET     = JWT_SECRET;
 process.env.ADMIN_EMAIL    = ADMIN_EMAIL;
 process.env.ADMIN_PASSWORD = ADMIN_PASS;
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://flypathoverseas.com',
+    'https://www.flypathoverseas.com'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/api/auth',         authRoutes);
